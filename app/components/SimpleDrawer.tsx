@@ -3,6 +3,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { type ReactNode, useState } from "react";
 import { Drawer } from "vaul";
+import { useDrawerStore } from "../stores/drawerStore";
 
 const container = cva(
   "relative w-full overflow-hidden rounded-lg border bg-gray-50",
@@ -70,11 +71,18 @@ const ClippedVaulDrawer = ({
   children,
 }: ClippedVaulDrawerProps = {}) => {
   const [containerEl, setContainerEl] = useState<HTMLDivElement | null>(null);
+  const open = useDrawerStore((s) => s.open);
+  const setOpen = useDrawerStore((s) => s.setOpen);
 
   return (
     <div ref={setContainerEl} className={container({ height })}>
       <div className="p-4">
-        <Drawer.Root container={containerEl} direction={direction ?? undefined}>
+        <Drawer.Root
+          open={open}
+          onOpenChange={setOpen}
+          container={containerEl}
+          direction={direction ?? undefined}
+        >
           <Drawer.Trigger
             className={trigger({ tone: triggerTone, size: triggerSize })}
           >
