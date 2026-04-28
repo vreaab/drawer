@@ -2,28 +2,84 @@
 
 import { useState } from "react";
 import { Drawer } from "vaul";
+import { cva, type VariantProps } from "class-variance-authority";
 
-const ClippedVaulDrawer = () => {
-  const [container, setContainer] = useState<HTMLDivElement | null>(null);
+const container = cva(
+  "relative w-full overflow-hidden rounded-lg border bg-gray-50",
+  {
+    variants: {
+      height: {
+        sm: "h-64",
+        md: "h-96",
+        lg: "h-[32rem]",
+      },
+    },
+    defaultVariants: { height: "md" },
+  },
+);
+
+const trigger = cva("rounded text-white", {
+  variants: {
+    tone: {
+      black: "bg-black",
+      blue: "bg-blue-600",
+    },
+    size: {
+      sm: "px-2 py-1 text-xs",
+      md: "px-3 py-1.5 text-sm",
+      lg: "px-4 py-2 text-base",
+    },
+  },
+  defaultVariants: { tone: "black", size: "md" },
+});
+
+const content = cva(
+  "absolute flex flex-col bg-white shadow-xl outline-none",
+  {
+    variants: {
+      direction: {
+        right: "inset-y-0 right-0 w-72",
+        left: "inset-y-0 left-0 w-72",
+        top: "inset-x-0 top-0 h-72",
+        bottom: "inset-x-0 bottom-0 h-72",
+      },
+    },
+    defaultVariants: { direction: "right" },
+  },
+);
+
+type ContainerVariants = VariantProps<typeof container>;
+type TriggerVariants = VariantProps<typeof trigger>;
+type ContentVariants = VariantProps<typeof content>;
+
+type ClippedVaulDrawerProps = ContainerVariants &
+  ContentVariants & {
+    triggerTone?: TriggerVariants["tone"];
+    triggerSize?: TriggerVariants["size"];
+  };
+
+const ClippedVaulDrawer = ({
+  height,
+  direction = "right",
+  triggerTone,
+  triggerSize,
+}: ClippedVaulDrawerProps = {}) => {
+  const [containerEl, setContainerEl] = useState<HTMLDivElement | null>(null);
 
   return (
-    <div
-      ref={setContainer}
-      className="relative h-96 w-full overflow-hidden rounded-lg border bg-gray-50"
-    >
+    <div ref={setContainerEl} className={container({ height })}>
       <div className="p-4">
-        <Drawer.Root container={container} direction="right">
-          <Drawer.Trigger className="rounded bg-black px-3 py-1.5 text-sm text-white">
+        <Drawer.Root container={containerEl} direction={direction ?? undefined}>
+          <Drawer.Trigger
+            className={trigger({ tone: triggerTone, size: triggerSize })}
+          >
             Open drawer in panel
           </Drawer.Trigger>
 
           <Drawer.Portal>
-            {/* Overlay sits inside the parent — use absolute, not fixed */}
             <Drawer.Overlay className="absolute inset-0 bg-black/30" />
             <Drawer.Content
-              className="absolute inset-y-0 right-0 flex w-72 flex-col bg-white shadow-xl outline-none"
-              // Vaul defaults to position: fixed; override to absolute so the
-              // parent's overflow:hidden actually clips it.
+              className={content({ direction })}
               style={{ position: "absolute" }}
             >
               <div className="p-6">
@@ -40,6 +96,6 @@ const ClippedVaulDrawer = () => {
       </div>
     </div>
   );
-}
+};
 
 export default ClippedVaulDrawer;
