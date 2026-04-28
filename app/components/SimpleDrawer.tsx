@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Drawer } from "vaul";
 import { cva, type VariantProps } from "class-variance-authority";
+import { type ReactNode, useState } from "react";
+import { Drawer } from "vaul";
 
 const container = cva(
   "relative w-full overflow-hidden rounded-lg border bg-gray-50",
@@ -33,20 +33,17 @@ const trigger = cva("rounded text-white", {
   defaultVariants: { tone: "black", size: "md" },
 });
 
-const content = cva(
-  "absolute flex flex-col bg-white shadow-xl outline-none",
-  {
-    variants: {
-      direction: {
-        right: "inset-y-0 right-0 w-72",
-        left: "inset-y-0 left-0 w-72",
-        top: "inset-x-0 top-0 h-72",
-        bottom: "inset-x-0 bottom-0 h-72",
-      },
+const content = cva("absolute flex flex-col bg-white shadow-xl outline-none", {
+  variants: {
+    direction: {
+      right: "inset-y-0 right-0 w-72",
+      left: "inset-y-0 left-0 w-72",
+      top: "inset-x-0 top-0 h-72",
+      bottom: "inset-x-0 bottom-0 h-72",
     },
-    defaultVariants: { direction: "right" },
   },
-);
+  defaultVariants: { direction: "right" },
+});
 
 type ContainerVariants = VariantProps<typeof container>;
 type TriggerVariants = VariantProps<typeof trigger>;
@@ -56,6 +53,10 @@ type ClippedVaulDrawerProps = ContainerVariants &
   ContentVariants & {
     triggerTone?: TriggerVariants["tone"];
     triggerSize?: TriggerVariants["size"];
+    triggerLabel?: ReactNode;
+    title?: ReactNode;
+    description?: ReactNode;
+    children?: ReactNode;
   };
 
 const ClippedVaulDrawer = ({
@@ -63,6 +64,10 @@ const ClippedVaulDrawer = ({
   direction = "right",
   triggerTone,
   triggerSize,
+  triggerLabel = "Open drawer in panel",
+  title,
+  description,
+  children,
 }: ClippedVaulDrawerProps = {}) => {
   const [containerEl, setContainerEl] = useState<HTMLDivElement | null>(null);
 
@@ -73,7 +78,7 @@ const ClippedVaulDrawer = ({
           <Drawer.Trigger
             className={trigger({ tone: triggerTone, size: triggerSize })}
           >
-            Open drawer in panel
+            {triggerLabel}
           </Drawer.Trigger>
 
           <Drawer.Portal>
@@ -83,12 +88,17 @@ const ClippedVaulDrawer = ({
               style={{ position: "absolute" }}
             >
               <div className="p-6">
-                <Drawer.Title className="text-lg font-semibold">
-                  Panel-scoped drawer
-                </Drawer.Title>
-                <Drawer.Description className="mt-1 text-sm text-gray-600">
-                  Lives inside the parent and is clipped by it.
-                </Drawer.Description>
+                {title ? (
+                  <Drawer.Title className="text-lg font-semibold">
+                    {title}
+                  </Drawer.Title>
+                ) : null}
+                {description ? (
+                  <Drawer.Description className="mt-1 text-sm text-gray-600">
+                    {description}
+                  </Drawer.Description>
+                ) : null}
+                {children}
               </div>
             </Drawer.Content>
           </Drawer.Portal>
