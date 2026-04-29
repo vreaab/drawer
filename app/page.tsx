@@ -3,24 +3,42 @@
 import SimpleDrawer from "./components/SimpleDrawer";
 import { useDrawerStore } from "./stores/drawerStore";
 
-export default function Home() {
+function FakeMap() {
   const openDrawer = useDrawerStore((s) => s.openDrawer);
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center gap-4 bg-zinc-50 font-sans dark:bg-black">
+    <div className="relative h-full w-full bg-[radial-gradient(circle_at_30%_30%,#bae6fd,transparent_60%),radial-gradient(circle_at_70%_70%,#86efac,transparent_60%),linear-gradient(135deg,#f0f9ff,#ecfccb)]">
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.06)_1px,transparent_1px)] [background-size:32px_32px]" />
       <button
         type="button"
         onClick={openDrawer}
-        className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white"
+        className="absolute top-3 right-3 rounded bg-black px-3 py-1.5 text-sm text-white shadow"
       >
-        Open from outside (zustand)
+        Show details
       </button>
-      <SimpleDrawer
-        direction="right"
-        height="md"
-        title="Panel-scoped drawer"
-        description="Lives inside the parent and is clipped by it."
-      />
+    </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-zinc-50 p-8 font-sans dark:bg-black">
+      <div className="w-full max-w-3xl">
+        <SimpleDrawer
+          direction="right"
+          height="lg"
+          title="Map details"
+          description="The drawer is clipped to the map's bounds."
+          panel={
+            <p className="mt-4 text-sm text-gray-700">
+              Trigger lives inside the map. State is global via Zustand, so the
+              button doesn&apos;t need to be wrapped by anything.
+            </p>
+          }
+        >
+          <FakeMap />
+        </SimpleDrawer>
+      </div>
     </div>
   );
 }

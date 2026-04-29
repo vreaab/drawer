@@ -19,21 +19,6 @@ const container = cva(
   },
 );
 
-const trigger = cva("rounded text-white", {
-  variants: {
-    tone: {
-      black: "bg-black",
-      blue: "bg-blue-600",
-    },
-    size: {
-      sm: "px-2 py-1 text-xs",
-      md: "px-3 py-1.5 text-sm",
-      lg: "px-4 py-2 text-base",
-    },
-  },
-  defaultVariants: { tone: "black", size: "md" },
-});
-
 const content = cva("absolute flex flex-col bg-white shadow-xl outline-none", {
   variants: {
     direction: {
@@ -47,27 +32,22 @@ const content = cva("absolute flex flex-col bg-white shadow-xl outline-none", {
 });
 
 type ContainerVariants = VariantProps<typeof container>;
-type TriggerVariants = VariantProps<typeof trigger>;
 type ContentVariants = VariantProps<typeof content>;
 
 type ClippedVaulDrawerProps = ContainerVariants &
   ContentVariants & {
-    triggerTone?: TriggerVariants["tone"];
-    triggerSize?: TriggerVariants["size"];
-    triggerLabel?: ReactNode;
     title?: ReactNode;
     description?: ReactNode;
+    panel?: ReactNode;
     children?: ReactNode;
   };
 
 const ClippedVaulDrawer = ({
   height,
   direction = "right",
-  triggerTone,
-  triggerSize,
-  triggerLabel = "Open drawer in panel",
   title,
   description,
+  panel,
   children,
 }: ClippedVaulDrawerProps = {}) => {
   const [containerEl, setContainerEl] = useState<HTMLDivElement | null>(null);
@@ -76,42 +56,36 @@ const ClippedVaulDrawer = ({
 
   return (
     <div ref={setContainerEl} className={container({ height })}>
-      <div className="p-4">
-        <Drawer.Root
-          open={open}
-          onOpenChange={setOpen}
-          container={containerEl}
-          direction={direction ?? undefined}
-        >
-          <Drawer.Trigger
-            className={trigger({ tone: triggerTone, size: triggerSize })}
-          >
-            {triggerLabel}
-          </Drawer.Trigger>
+      <Drawer.Root
+        open={open}
+        onOpenChange={setOpen}
+        container={containerEl}
+        direction={direction ?? undefined}
+      >
+        {children}
 
-          <Drawer.Portal>
-            <Drawer.Overlay className="absolute inset-0 bg-black/30" />
-            <Drawer.Content
-              className={content({ direction })}
-              style={{ position: "absolute" }}
-            >
-              <div className="p-6">
-                {title ? (
-                  <Drawer.Title className="text-lg font-semibold">
-                    {title}
-                  </Drawer.Title>
-                ) : null}
-                {description ? (
-                  <Drawer.Description className="mt-1 text-sm text-gray-600">
-                    {description}
-                  </Drawer.Description>
-                ) : null}
-                {children}
-              </div>
-            </Drawer.Content>
-          </Drawer.Portal>
-        </Drawer.Root>
-      </div>
+        <Drawer.Portal>
+          <Drawer.Overlay className="absolute inset-0 bg-black/30" />
+          <Drawer.Content
+            className={content({ direction })}
+            style={{ position: "absolute" }}
+          >
+            <div className="p-6">
+              {title ? (
+                <Drawer.Title className="text-lg font-semibold">
+                  {title}
+                </Drawer.Title>
+              ) : null}
+              {description ? (
+                <Drawer.Description className="mt-1 text-sm text-gray-600">
+                  {description}
+                </Drawer.Description>
+              ) : null}
+              {panel}
+            </div>
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
     </div>
   );
 };
