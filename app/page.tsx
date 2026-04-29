@@ -1,6 +1,6 @@
 "use client";
 
-import SimpleDrawer from "./components/SimpleDrawer";
+import Drawer from "./components/Drawer";
 import { useDrawerStore } from "./stores/drawerStore";
 
 function FakeMap() {
@@ -24,20 +24,23 @@ export default function Home() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-zinc-50 p-8 font-sans dark:bg-black">
       <div className="w-full max-w-3xl">
-        <SimpleDrawer
-          direction="right"
-          height="lg"
-          title="Map details"
-          description="The drawer is clipped to the map's bounds."
-          panel={
+        <Drawer direction="right" height="lg">
+          <Drawer.Surface>
+            <FakeMap />
+          </Drawer.Surface>
+          <Drawer.Content>
+            <Drawer.Title className="text-lg font-semibold">
+              Map details
+            </Drawer.Title>
+            <Drawer.Description className="mt-1 text-sm text-gray-600">
+              The drawer is clipped to the map&apos;s bounds.
+            </Drawer.Description>
             <p className="mt-4 text-sm text-gray-700">
-              Trigger lives inside the map. State is global via Zustand, so the
-              button doesn&apos;t need to be wrapped by anything.
+              Populate this with anything. State is global via Zustand, so the
+              in-map button doesn&apos;t need to be wrapped by anything.
             </p>
-          }
-        >
-          <FakeMap />
-        </SimpleDrawer>
+          </Drawer.Content>
+        </Drawer>
       </div>
     </div>
   );
