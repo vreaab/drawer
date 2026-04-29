@@ -1,6 +1,7 @@
 "use client";
 
-import Drawer from "./components/Drawer";
+import { useState } from "react";
+import PortalDrawer from "./components/PortalDrawer";
 import { useDrawerStore } from "./stores/drawerStore";
 
 function FakeMap() {
@@ -21,26 +22,31 @@ function FakeMap() {
 }
 
 export default function Home() {
+  const [mapEl, setMapEl] = useState<HTMLDivElement | null>(null);
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-zinc-50 p-8 font-sans dark:bg-black">
       <div className="w-full max-w-3xl">
-        <Drawer direction="right" height="lg">
-          <Drawer.Surface>
-            <FakeMap />
-          </Drawer.Surface>
-          <Drawer.Content>
-            <Drawer.Title className="text-lg font-semibold">
+        <div
+          ref={setMapEl}
+          className="relative h-[32rem] w-full overflow-hidden rounded-lg border bg-gray-50"
+        >
+          <FakeMap />
+        </div>
+        <PortalDrawer container={mapEl} direction="right">
+          <PortalDrawer.Content>
+            <PortalDrawer.Title className="text-lg font-semibold">
               Map details
-            </Drawer.Title>
-            <Drawer.Description className="mt-1 text-sm text-gray-600">
+            </PortalDrawer.Title>
+            <PortalDrawer.Description className="mt-1 text-sm text-gray-600">
               The drawer is clipped to the map&apos;s bounds.
-            </Drawer.Description>
+            </PortalDrawer.Description>
             <p className="mt-4 text-sm text-gray-700">
-              Populate this with anything. State is global via Zustand, so the
-              in-map button doesn&apos;t need to be wrapped by anything.
+              The map isn&apos;t wrapped by the drawer — we pass the element
+              reference instead.
             </p>
-          </Drawer.Content>
-        </Drawer>
+          </PortalDrawer.Content>
+        </PortalDrawer>
       </div>
     </div>
   );
